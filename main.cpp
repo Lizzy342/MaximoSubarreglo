@@ -102,6 +102,7 @@ int main(){
     }
 
     //Medicion 
+   /*
         std::vector<int> tamanos = {
         1000,
         2000,
@@ -165,6 +166,27 @@ int main(){
         anteriorCuadratico = tiempoCuadratico;
         anteriorKadane = tiempoKadane;
     }
+    */
+    srand(42);
+
+    int n = 100000000; // 10^8
+    std::vector<int> A = generarArreglo(n);
+
+    double tiempoKadane = medirTiempo(kadane, A);
+
+    std::cout << std::left
+              << std::setw(10) << "N"
+              << std::setw(18) << "Kadane (s)"
+              << "\n";
+    std::cout << std::string(28, '-') << "\n";
+
+    std::cout << std::left
+              << std::setw(10) << n
+              << std::setw(18) << std::fixed << std::setprecision(6) << tiempoKadane
+              << "\n";
+
+    return 0;
+
 
     return 0;
 }

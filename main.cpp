@@ -1,5 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <iomanip>
+#include <cmath>
+#include <string>
+#include <cstdlib>
 
 int cubico(const std::vector<int>& A){
     int maximo = A[0];
@@ -54,8 +59,22 @@ std::vector<int> generarArreglo(int n){
     return A;
 }
 
+double medirTiempo(int (*funcion)(const std::vector<int>&), const std::vector<int>& A){
+
+    auto inicio = std::chrono::high_resolution_clock::now();
+
+    volatile int resultado = funcion(A);
+
+    auto fin = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> tiempo = fin - inicio;
+
+    return tiempo.count();
+}
 
 int main(){
+
+    //Implementacion
     srand(42);
 
     bool correctas = true;
@@ -80,6 +99,71 @@ int main(){
 
     if (correctas){
         std::cout << "Las 100 pruebas fueron correctas\n";
+    }
+
+    //Medicion 
+        std::vector<int> tamanos = {
+        1000,
+        2000,
+        4000,
+        8000,
+        10000
+    };
+
+    std::cout << std::left
+        << std::setw(10) << "N"
+        << std::setw(18) << "Cubico"
+        << std::setw(18) << "Razon"
+        << std::setw(18) << "Cuadratico"
+        << std::setw(18) << "Razon"
+        << std::setw(18) << "Kadane"
+        << std::setw(18) << "Razon"
+        << "\n";
+
+    std::cout << std::string(118, '-') << "\n";
+
+    double anteriorCubico = 0;
+    double anteriorCuadratico = 0;
+    double anteriorKadane = 0;
+
+    for (int n : tamanos){
+        std::vector<int> A = generarArreglo(n);
+
+        double tiempoCubico = medirTiempo(cubico, A);
+
+        double tiempoCuadratico = medirTiempo(cuadratico, A);
+
+        double tiempoKadane = medirTiempo(kadane, A);
+
+        double razonCubico = 0;
+        double razonCuadratico = 0;
+        double razonKadane = 0;
+
+        if (anteriorCubico > 0){
+            razonCubico = tiempoCubico / anteriorCubico;
+        }
+
+        if (anteriorCuadratico > 0){
+            razonCuadratico = tiempoCuadratico / anteriorCuadratico;
+        }
+
+        if (anteriorKadane > 0){
+            razonKadane = tiempoKadane / anteriorKadane;
+        }
+
+        std::cout << std::left
+             << std::setw(10) << n
+             << std::setw(18) << std::fixed << std::setprecision(6) << tiempoCubico
+             << std::setw(18) << razonCubico
+             << std::setw(18) << tiempoCuadratico
+             << std::setw(18) << razonCuadratico
+             << std::setw(18) << tiempoKadane
+             << std::setw(18) << razonKadane
+             << "\n";
+
+        anteriorCubico = tiempoCubico;
+        anteriorCuadratico = tiempoCuadratico;
+        anteriorKadane = tiempoKadane;
     }
 
     return 0;
